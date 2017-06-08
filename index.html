@@ -1,398 +1,204 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>three.js webgl - WWOBJLoader2</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!doctype html>
+<html>
+	<head>
+		<title>learningthree.js boiler plate for three.js</title>
+		<meta charset="utf-8">
 
-  <style>
-    body {
-      font-family: Monospace;
-      background-color: #000;
-      color: #fff;
-      margin: 0 0 0 0;
-      padding: 0 0 0 0;
-      border: none;
-      cursor: default;
-    }
-    #info {
-      color: #fff;
-      position: absolute;
-      top: 10px;
-      width: 100%;
-      text-align: center;
-      z-index: 100;
-      display:block;
-    }
-    #info a {
-      color: #f00;
-      font-weight: bold;
-      text-decoration: underline;
-      cursor: pointer
-    }
-    #glFullscreen {
-      width: 100%;
-      height: 100vh;
-      min-width: 640px;
-      min-height: 360px;
-      position: relative;
-      overflow: hidden;
-      z-index: 0;
-    }
-    #example {
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      background-color: #000000;
-    }
-    #feedback {
-      color: darkorange;
-    }
-    #dat {
-      user-select: none;
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-Index: 200;
-    }
-    #fileUploadInput {
-      display: none;
-    }
-  </style>
+		<link href="https://fonts.googleapis.com/css?family=Cormorant+SC" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Mogra" rel="stylesheet">
 
-</head>
-
-	<body>
-    <div id="glFullscreen">
-			<canvas id="example"></canvas>
-		</div>
-		<div id="dat">
-
-		</div>
-		<div id="info">
-			<a href="http://threejs.org" target="_blank">three.js</a> - OBJLoader2 direct loader test
-			<div id="feedback"></div>
-		</div>
-		<input id="fileUploadInput" type="file" name="files[]" multiple accept=".obj,.mtl" />
-
-		<script src="js/Detector.js"></script>
 		<script src="build/three.js"></script>
-		<script src="js/controls/TrackballControls.js"></script>
-		<script src="js/loaders/MTLLoader.js"></script>
-		<script src="js/libs/dat.gui.min.js"></script>
+    <script src="js/Detector.js"></script>
+    <script src="js/loaders/OBJLoader.js"></script>
+    <script src="js/loaders/MTLLoader.js"></script>
+    <script src="js/controls/TrackballControls.js"></script>
+		<script
+		  src="https://code.jquery.com/jquery-3.2.1.js"
+		  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+		  crossorigin="anonymous"></script>
+		<style>
+		#container {
+				box-shadow: 0.1vw -0.1vw 5vw #888888;
+				background-color: #fff;
+				width: 100%;
+				height: 40vh;
+				padding: 0px;
+		}
+		#message {
+				background-color: #fff;
+				width: 100%;
+				height: 40vh;
+				text-align: center;
+				vertical-align: middle;
+				line-height: 10vh;
+				font-family: 'Cormorant SC', serif;
+				font-style: italic;
+		}
+		#spacer{
+				line-height: 6vh;
+		}
+		a, a:link, a:active, a:visited {
+			font-family: 'Mogra', cursive;
+			color: #8f8f8f;
+			text-decoration: none;
+		}
+		 a:hover {
+			 color: #8f8f8ff;
+ 			 font-style: italic;
+			 font-family: 'Mogra', cursive;
+			 text-decoration: none;
+		}
+		#footer {
+			position:fixed;
+	    bottom:0;
+		}
+		</style>
+	</head>
+<body>
 
-		<script src="js/loaders/OBJLoader2.js"></script>
-		<script src="js/loaders/WWOBJLoader2.js"></script>
-		<script>
-			'use strict';
-			var WWOBJLoader2Example = (function () {
-				var Validator = THREE.OBJLoader2.prototype._getValidator();
-				function WWOBJLoader2Example( elementToBindTo ) {
-					this.renderer = null;
-					this.canvas = elementToBindTo;
-					this.aspectRatio = 1;
-					this.recalcAspectRatio();
-					this.scene = null;
-					this.cameraDefaults = {
-						posCamera: new THREE.Vector3( 0.0, 175.0, 500.0 ),
-						posCameraTarget: new THREE.Vector3( 0, 0, 0 ),
-						near: 0.1,
-						far: 10000,
-						fov: 45
-					};
-					this.camera = null;
-					this.cameraTarget = this.cameraDefaults.posCameraTarget;
-					this.controls = null;
-					this.smoothShading = true;
-					this.doubleSide = false;
-					this.streamMeshes = true;
-					this.cube = null;
-					this.pivot = null;
-					this.wwObjLoader2 = new THREE.OBJLoader2.WWOBJLoader2();
-					this.wwObjLoader2.setCrossOrigin( 'anonymous' );
-					// Check for the various File API support.
-					this.fileApiAvailable = true;
-					if ( window.File && window.FileReader && window.FileList && window.Blob ) {
-						console.log( 'File API is supported! Enabling all features.' );
-					} else {
-						this.fileApiAvailable = false;
-						console.warn( 'File API is not supported! Disabling file loading.' );
+  <div id="container"></div>
+	<br id=spacer>
+	<hr>
+	<div id="message">EAT YOUR HEART OUT, ANDY WARHOL</div>
+	<footer id=footer><a href="http://ecumene.xyz">return to ecumene.xyz</a></footer>
+
+  <script type="x-shader/x-vertex" id="vertexShader">
+    varying vec3 vWorldPosition;
+    void main() {
+      vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+      vWorldPosition = worldPosition.xyz;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    }
+  </script>
+
+  <script type="x-shader/x-fragment" id="fragmentShader">
+    uniform vec3 topColor;
+    uniform vec3 bottomColor;
+    uniform float offset;
+    uniform float exponent;
+    varying vec3 vWorldPosition;
+    void main() {
+      float h = normalize( vWorldPosition + offset ).y;
+      gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
+    }
+  </script>
+
+
+	<script type="text/javascript">
+		var stats, scene, renderer, clock;
+		var camera;
+
+		if( !init() )	animate();
+
+		// init the scene
+		function init(){
+			container = document.getElementById('container');
+			clock = new THREE.Clock();
+
+			// create a scene
+			scene = new THREE.Scene();
+
+			scene.fog = new THREE.Fog( 0xffffff, 1, 1000 );
+			scene.fog.color.setHSL( 0.6, 0, 1 );
+
+			// put a camera in the scene
+			camera = new THREE.PerspectiveCamera(35, $(container).width() / $(container).height(), 1, 10000 );
+			camera.position.set(-20, 10, 20);
+			camera.up = new THREE.Vector3(0,1,0);
+			camera.lookAt(new THREE.Vector3(20,5,0));
+			scene.add(camera);
+
+			dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+			dirLight.color.setRGB( 1, 1, 1 );
+			dirLight.position.set( 0, 0, 1 );
+			dirLight.position.multiplyScalar( 50 );
+			scene.add( dirLight );
+      var d = 50;
+
+      var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
+      var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
+      groundMat.color.setHSL( 1, 1, 1 );
+
+      var ground = new THREE.Mesh( groundGeo, groundMat );
+      ground.rotation.x = -Math.PI/2;
+      ground.position.y = -33;
+      scene.add( ground );
+
+      var vertexShader = document.getElementById( 'vertexShader' ).textContent;
+      var fragmentShader = document.getElementById( 'fragmentShader' ).textContent;
+      var uniforms = {
+        topColor:    { value: new THREE.Color( 0xf0f0f0 ) },
+        bottomColor: { value: new THREE.Color( 0xffffff ) },
+        offset:      { value: 33 },
+        exponent:    { value: 0.6 }
+      };
+      scene.fog.color.copy( uniforms.bottomColor.value );
+      var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
+			var planeGeo = new THREE.PlaneGeometry( 10000, 10000, 1, 1 );
+      var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } );
+			var planeMat = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
+      var sky = new THREE.Mesh( skyGeo, skyMat );
+			var plane = new THREE.Mesh( planeGeo, planeMat );
+			plane.rotateX(1.5708);
+			plane.position.set(0, -7.5/2, 0)
+
+			scene.add( sky );
+			scene.add( plane );
+
+      var objLoader = new THREE.OBJLoader();
+      var mtlLoader = new THREE.MTLLoader();
+
+      mtlLoader.setPath('model/');
+      mtlLoader.load('soup.mtl', function(materials) {
+        materials.preload();
+        var objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials(materials);
+        objLoader.setPath('model/');
+        objLoader.load('soup.obj', function(object) {
+					var x = 20;
+					var y = 5;
+					for(xCount = 0; xCount < (x*30); xCount++){
+						for(yCount = 0; yCount < y; yCount++){
+							var objectClone = object.clone();
+							objectClone.rotateY(Math.random() *0.7 * 1.5708 - 0.1);
+							objectClone.position.x = xCount*4.65 - (x*4.65/5);
+							objectClone.position.y = yCount*6.78;
+							scene.add(objectClone);
+					  }
 					}
-				}
-				WWOBJLoader2Example.prototype.initGL = function () {
-					this.renderer = new THREE.WebGLRenderer( {
-						canvas: this.canvas,
-						antialias: true,
-						autoClear: true
-					} );
-					this.renderer.setClearColor( 0x050505 );
-					this.scene = new THREE.Scene();
-					this.camera = new THREE.PerspectiveCamera( this.cameraDefaults.fov, this.aspectRatio, this.cameraDefaults.near, this.cameraDefaults.far );
-					this.resetCamera();
-					this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
-					var ambientLight = new THREE.AmbientLight( 0x404040 );
-					var directionalLight1 = new THREE.DirectionalLight( 0xC0C090 );
-					var directionalLight2 = new THREE.DirectionalLight( 0xC0C090 );
-					directionalLight1.position.set( -100, -50, 100 );
-					directionalLight2.position.set( 100, 50, -100 );
-					this.scene.add( directionalLight1 );
-					this.scene.add( directionalLight2 );
-					this.scene.add( ambientLight );
-					var helper = new THREE.GridHelper( 1200, 60, 0xFF4444, 0x404040 );
-					this.scene.add( helper );
-					var geometry = new THREE.BoxGeometry( 10, 10, 10 );
-					var material = new THREE.MeshNormalMaterial();
-					this.cube = new THREE.Mesh( geometry, material );
-					this.cube.position.set( 0, 0, 0 );
-					this.scene.add( this.cube );
-					this.createPivot();
-				};
-				WWOBJLoader2Example.prototype.createPivot = function () {
-					this.pivot = new THREE.Object3D();
-					this.pivot.name = 'Pivot';
-					this.scene.add( this.pivot );
-				};
-				WWOBJLoader2Example.prototype.initPostGL = function () {
-					var reportProgress = function ( content ) {
-						console.log( 'Progress: ' + content );
-					};
-					var materialsLoaded = function ( materials ) {
-						var count = Validator.isValid( materials ) ? materials.length : 0;
-						console.log( 'Loaded #' + count + ' materials.' );
-					};
-					var meshLoaded = function ( name, bufferGeometry, material ) {
-						console.log( 'Loaded mesh: ' + name + ' Material name: ' + material.name );
-					};
-					var completedLoading = function () {
-						console.log( 'Loading complete!' );
-					};
-					this.wwObjLoader2.registerCallbackProgress( reportProgress );
-					this.wwObjLoader2.registerCallbackCompletedLoading( completedLoading );
-					this.wwObjLoader2.registerCallbackMaterialsLoaded( materialsLoaded );
-					this.wwObjLoader2.registerCallbackMeshLoaded( meshLoaded );
-					return true;
-				};
-				WWOBJLoader2Example.prototype.loadFiles = function ( prepData ) {
-					prepData.setSceneGraphBaseNode( this.pivot );
-					prepData.setStreamMeshes( this.streamMeshes );
-					this.wwObjLoader2.prepareRun( prepData );
-					this.wwObjLoader2.run();
-				};
-				WWOBJLoader2Example.prototype._handleFileSelect = function ( event, pathTexture ) {
-					var fileObj = null;
-					var fileMtl = null;
-					var files = event.target.files;
-					for ( var i = 0, file; file = files[ i ]; i++) {
-						if ( file.name.indexOf( '\.obj' ) > 0 && fileObj === null ) {
-							fileObj = file;
-						}
-						if ( file.name.indexOf( '\.mtl' ) > 0 && fileMtl === null ) {
-							fileMtl = file;
-						}
-					}
-					if ( ! Validator.isValid( fileObj ) ) {
-						alert( 'Unable to load OBJ file from given files.' );
-					}
-					var fileReader = new FileReader();
-					fileReader.onload = function( fileDataObj ) {
-						var uint8Array = new Uint8Array( fileDataObj.target.result );
-						if ( fileMtl === null ) {
-							app.loadFilesUser({
-								name: 'userObj',
-								objAsArrayBuffer: uint8Array,
-								pathTexture: pathTexture,
-								mtlAsString: null
-							})
-						} else {
-							fileReader.onload = function( fileDataMtl ) {
-								app.loadFilesUser({
-									name: 'userObj',
-									objAsArrayBuffer: uint8Array,
-									pathTexture: pathTexture,
-									mtlAsString: fileDataMtl.target.result
-								})
-							};
-							fileReader.readAsText( fileMtl );
-						}
-					};
-					fileReader.readAsArrayBuffer( fileObj );
-				};
-				WWOBJLoader2Example.prototype.loadFilesUser = function ( objDef ) {
-					var prepData = new THREE.OBJLoader2.WWOBJLoader2.PrepDataArrayBuffer(
-						objDef.name, objDef.objAsArrayBuffer, objDef.pathTexture, objDef.mtlAsString
-					);
-					prepData.setSceneGraphBaseNode( this.pivot );
-					prepData.setStreamMeshes( this.streamMeshes );
-					this.wwObjLoader2.prepareRun( prepData );
-					this.wwObjLoader2.run();
-				};
-				WWOBJLoader2Example.prototype.resizeDisplayGL = function () {
-					this.controls.handleResize();
-					this.recalcAspectRatio();
-					this.renderer.setSize( this.canvas.offsetWidth, this.canvas.offsetHeight, false );
-					this.updateCamera();
-				};
-				WWOBJLoader2Example.prototype.recalcAspectRatio = function () {
-					this.aspectRatio = ( this.canvas.offsetHeight === 0 ) ? 1 : this.canvas.offsetWidth / this.canvas.offsetHeight;
-				};
-				WWOBJLoader2Example.prototype.resetCamera = function () {
-					this.camera.position.copy( this.cameraDefaults.posCamera );
-					this.cameraTarget.copy( this.cameraDefaults.posCameraTarget );
-					this.updateCamera();
-				};
-				WWOBJLoader2Example.prototype.updateCamera = function () {
-					this.camera.aspect = this.aspectRatio;
-					this.camera.lookAt( this.cameraTarget );
-					this.camera.updateProjectionMatrix();
-				};
-				WWOBJLoader2Example.prototype.render = function () {
-					if ( ! this.renderer.autoClear ) this.renderer.clear();
-					this.controls.update();
-					this.cube.rotation.x += 0.05;
-					this.cube.rotation.y += 0.05;
-					this.renderer.render( this.scene, this.camera );
-				};
-				WWOBJLoader2Example.prototype.alterSmoothShading = function () {
-					var scope = this;
-					scope.smoothShading = ! scope.smoothShading;
-					console.log( scope.smoothShading ? 'Enabling SmoothShading' : 'Enabling FlatShading');
-					scope.traversalFunction = function ( material ) {
-						material.shading = scope.smoothShading ? THREE.SmoothShading : THREE.FlatShading;
-						material.needsUpdate = true;
-					};
-					var scopeTraverse = function ( object3d ) {
-						scope.traverseScene( object3d );
-					};
-					scope.pivot.traverse( scopeTraverse );
-				};
-				WWOBJLoader2Example.prototype.alterDouble = function () {
-					var scope = this;
-					scope.doubleSide = ! scope.doubleSide;
-					console.log( scope.doubleSide ? 'Enabling DoubleSide materials' : 'Enabling FrontSide materials');
-					scope.traversalFunction  = function ( material ) {
-						material.side = scope.doubleSide ? THREE.DoubleSide : THREE.FrontSide;
-					};
-					var scopeTraverse = function ( object3d ) {
-						scope.traverseScene( object3d );
-					};
-					scope.pivot.traverse( scopeTraverse );
-				};
-				WWOBJLoader2Example.prototype.traverseScene = function ( object3d ) {
-					if ( object3d.material instanceof THREE.MultiMaterial ) {
-						var materials = object3d.material.materials;
-						for ( var name in materials ) {
-							if ( materials.hasOwnProperty( name ) )	this.traversalFunction( materials[ name ] );
-						}
-					} else if ( object3d.material ) {
-						this.traversalFunction( object3d.material );
-					}
-				};
-				WWOBJLoader2Example.prototype.clearAllAssests = function () {
-					var scope = this;
-					var remover = function ( object3d ) {
-						if ( object3d === scope.pivot ) {
-							return;
-						}
-						console.log( 'Removing: ' + object3d.name );
-						scope.scene.remove( object3d );
-						if ( object3d.hasOwnProperty( 'geometry' ) ) {
-							object3d.geometry.dispose();
-						}
-						if ( object3d.hasOwnProperty( 'material' ) ) {
-							var mat = object3d.material;
-							if ( mat.hasOwnProperty( 'materials' ) ) {
-								var materials = mat.materials;
-								for ( var name in materials ) {
-									if ( materials.hasOwnProperty( name ) ) materials[ name ].dispose();
-								}
-							}
-						}
-						if ( object3d.hasOwnProperty( 'texture' ) ) {
-							object3d.texture.dispose();
-						}
-					};
-					scope.scene.remove( scope.pivot );
-					scope.pivot.traverse( remover );
-					scope.createPivot();
-				};
-				return WWOBJLoader2Example;
-			})();
-			var app = new WWOBJLoader2Example( document.getElementById( 'example' ) );
-			// Init dat.gui and controls
-			var elemFileInput = document.getElementById( 'fileUploadInput' );
-			var WWOBJLoader2Control = function() {
-				this.smoothShading = app.smoothShading;
-				this.doubleSide = app.doubleSide;
-				this.streamMeshes = app.streamMeshes;
-			};
-			var wwObjLoader2Control = new WWOBJLoader2Control();
-			var gui = new dat.GUI( {
-				autoPlace: false,
-				width: 320
-			} );
-			var menuDiv = document.getElementById( 'dat' );
-			menuDiv.appendChild(gui.domElement);
-			var folderOptions = gui.addFolder( 'WWOBJLoader2 Options' );
-			var controlSmooth = folderOptions.add( wwObjLoader2Control, 'smoothShading' ).name( 'Smooth Shading' );
-			controlSmooth.onChange( function( value ) {
-				console.log( 'Setting smoothShading to: ' + value );
-				app.alterSmoothShading();
-			});
-			var controlDouble = folderOptions.add( wwObjLoader2Control, 'doubleSide' ).name( 'Double Side Materials' );
-			controlDouble.onChange( function( value ) {
-				console.log( 'Setting doubleSide to: ' + value );
-				app.alterDouble();
-			});
-			var controlStreamMeshes = folderOptions.add( wwObjLoader2Control, 'streamMeshes' ).name( 'Stream Meshes' );
-			controlStreamMeshes.onChange( function( value ) {
-				console.log( 'Setting streamMeshes to: ' + value );
-				app.streamMeshes = value;
-			});
-			if ( app.fileApiAvailable ) {
-				wwObjLoader2Control.pathTexture = 'obj/female02/';
-				var controlPathTexture = folderOptions.add( wwObjLoader2Control, 'pathTexture' ).name( 'Relative path to textures' );
-				controlPathTexture.onChange( function( value ) {
-					console.log( 'Setting pathTexture to: ' + value );
-					app.pathTexture = value + '/';
-				});
-				wwObjLoader2Control.loadObjFile = function () {
-					elemFileInput.click();
-				};
-				folderOptions.add( wwObjLoader2Control, 'loadObjFile' ).name( 'Load OBJ/MTL Files' );
-				var handleFileSelect = function ( object3d ) {
-					app._handleFileSelect( object3d, wwObjLoader2Control.pathTexture );
-				};
-				elemFileInput.addEventListener( 'change' , handleFileSelect, false );
-				wwObjLoader2Control.clearAllAssests = function () {
-					app.clearAllAssests();
-				};
-				folderOptions.add( wwObjLoader2Control, 'clearAllAssests' ).name( 'Clear Scene' );
+        });
+      });
+
+      if( Detector.webgl ){
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setClearColor( scene.fog.color );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( $(container).width(),$(container).height() );
+				container.appendChild( renderer.domElement );
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.shadowMap.enabled = false;
+			}else{
+			  	Detector.addGetWebGLMessage();
+			    return true;
 			}
-			folderOptions.open();
-			// init three.js example application
-			var resizeWindow = function () {
-				app.resizeDisplayGL();
-			};
-			var render = function () {
-				requestAnimationFrame( render );
-				app.render();
-			};
-			window.addEventListener( 'resize', resizeWindow, false );
-			console.log( 'Starting initialisation phase...' );
-			app.initGL();
-			app.resizeDisplayGL();
-			app.initPostGL();
-			var prepData = new THREE.OBJLoader2.WWOBJLoader2.PrepDataFile(
-				'soup',
-				'./',
-				'soup.obj',
-				'./',
-				'soup.mtl'
-			);
-			app.loadFiles( prepData );
-			// kick render loop
+			container.appendChild(renderer.domElement);
+		}
+
+		var x;
+
+		function animate() {
+			requestAnimationFrame( animate );
 			render();
-		</script>
-	</body>
+			x += 1;
+			if(camera.position.x > 20*3) camera.position.x = 0;
+			camera.position.x += clock.getDelta();
+		}
+
+		// render the scene
+		function render() {
+			renderer.render( scene, camera );
+		}
+	</script>
+</body>
 </html>
